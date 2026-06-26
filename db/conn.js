@@ -1,15 +1,12 @@
-import { MongoClient } from "mongodb";
+import mongoose from "mongoose";
 
-const client = new MongoClient(process.env.ATLAS_URI);
-
-let conn;
+// Connect to MongoDB Atlas using the connection string comes from the .env file.
 try {
-  conn = await client.connect();
-  console.log('Connected to MongoDB')
-} catch (e) {
-  console.error(e);
+  await mongoose.connect(process.env.ATLAS_URI);
+  console.log("Connected to MongoDB with Mongoose");
+} catch (error) {
+  console.error("MongoDB connection error:", error);
 }
 
-let db = conn.db("sample_training");
-
-export default db;
+// Export mongoose so the rest of the app can use the active connection.
+export default mongoose;
