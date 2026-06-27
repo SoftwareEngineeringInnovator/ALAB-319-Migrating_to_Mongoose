@@ -1,22 +1,26 @@
 import express from "express";
-import db from "../db/conn.js";
-import { ObjectId } from "mongodb";
+import Grade from "../models/Grades.js";
 
 const router = express.Router();
 
 // Create a single grade entry
 router.post("/", async (req, res) => {
-  let collection = await db.collection("grades");
-  let newDocument = req.body;
+  try {
+    let newDocument = req.body;
 
-  // rename fields for backwards compatibility
-  if (newDocument.student_id) {
-    newDocument.learner_id = newDocument.student_id;
-    delete newDocument.student_id;
+    // Rename fields for backwards compatibility.
+    if (newDocument.student_id) {
+      newDocument.learner_id = newDocument.student_id;
+      delete newDocument.student_id;
+    }
+
+    const result = await Grade.create(newDocument);
+
+    res.status(201).send(result);
+  } catch (error) {
+    console.error("Create grade error:", error);
+    res.status(500).send({ error: "Failed to create grade entry." });
   }
-
-  let result = await collection.insertOne(newDocument);
-  res.send(result).status(204);
 });
 
 // Get a single grade entry

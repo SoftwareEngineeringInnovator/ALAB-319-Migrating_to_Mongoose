@@ -1,5 +1,5 @@
 import 'dotenv/config';
-
+import "./db/conn.js";
 import express from "express";
 
 const PORT = 3000;
