@@ -124,13 +124,20 @@ router.get("/learner/:id", async (req, res) => {
 
 // Delete a learner's grade data
 router.delete("/learner/:id", async (req, res) => {
-  let collection = await db.collection("grades");
-  let query = { learner_id: Number(req.params.id) };
+  try {
+    const query = { learner_id: Number(req.params.id) };
 
-  let result = await collection.deleteOne(query);
+    const result = await Grade.deleteOne(query);
 
-  if (!result) res.send("Not found").status(404);
-  else res.send(result).status(200);
+    if (result.deletedCount === 0) {
+      return res.status(404).send("Not found");
+    }
+
+    res.status(200).send(result);
+  } catch (error) {
+    console.error("Delete learner grades error:", error);
+    res.status(500).send({ error: "Failed to delete learner grade data." });
+  }
 });
 
 // Get a class's grade data
