@@ -166,15 +166,22 @@ router.get("/class/:id", async (req, res) => {
 
 // Update a class id
 router.patch("/class/:id", async (req, res) => {
-  let collection = await db.collection("grades");
-  let query = { class_id: Number(req.params.id) };
+  try {
+    const query = { class_id: Number(req.params.id) };
 
-  let result = await collection.updateMany(query, {
-    $set: { class_id: req.body.class_id }
-  });
+    const result = await Grade.updateMany(query, {
+      $set: { class_id: req.body.class_id },
+    });
 
-  if (!result) res.send("Not found").status(404);
-  else res.send(result).status(200);
+    if (result.modifiedCount === 0) {
+      return res.status(404).send("Not found");
+    }
+
+    res.status(200).send(result);
+  } catch (error) {
+    console.error("Update class error:", error);
+    res.status(500).send({ error: "Failed to update class id." });
+  }
 });
 
 // Delete a class
