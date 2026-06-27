@@ -48,3 +48,11 @@ ALAB-319-WORKING-WITH-MONGOOSE
 ├── package-lock.json
 ├── package.json
 └── README.md
+```
+
+## Author
+
+Fredy Chilito
+Software Engineering Student
+Created as part of the Per Scholas Software Engineering Program.
+Project: Working With Mongoose
