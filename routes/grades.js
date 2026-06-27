@@ -41,15 +41,21 @@ router.get("/:id", async (req, res) => {
 
 // Add a score to a grade entry
 router.patch("/:id/add", async (req, res) => {
-  let collection = await db.collection("grades");
-  let query = { _id: new ObjectId(req.params.id) };
+  try {
+    const result = await Grade.findByIdAndUpdate(
+      req.params.id,
+      { $push: { scores: req.body } },
+      { new: true });
 
-  let result = await collection.updateOne(query, {
-    $push: { scores: req.body }
-  });
+    if (!result) {
+      return res.status(404).send("Not found");
+    }
 
-  if (!result) res.send("Not found").status(404);
-  else res.send(result).status(200);
+    res.status(200).send(result);
+  } catch (error) {
+    console.error("Add score error:", error);
+    res.status(500).send({ error: "Failed to add score." });
+  }
 });
 
 // Remove a score from a grade entry
