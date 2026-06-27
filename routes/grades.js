@@ -100,16 +100,26 @@ router.get("/student/:id", async (req, res) => {
 
 // Get a learner's grade data
 router.get("/learner/:id", async (req, res) => {
-  let collection = await db.collection("grades");
-  let query = { learner_id: Number(req.params.id) };
-  
-  // Check for class_id parameter
-  if (req.query.class) query.class_id = Number(req.query.class);
+  try {
+    let query = { learner_id: Number(req.params.id) };
 
-  let result = await collection.find(query).toArray();
+    // Check for class_id parameter.
+    // Example: /grades/learner/9999?class=1234
+    if (req.query.class) {
+      query.class_id = Number(req.query.class);
+    }
 
-  if (!result) res.send("Not found").status(404);
-  else res.send(result).status(200);
+    const result = await Grade.find(query);
+
+    if (result.length === 0) {
+      return res.status(404).send("Not found");
+    }
+
+    res.status(200).send(result);
+  } catch (error) {
+    console.error("Get learner grades error:", error);
+    res.status(500).send({ error: "Failed to get learner grade data." });
+  }
 });
 
 // Delete a learner's grade data
